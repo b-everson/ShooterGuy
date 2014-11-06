@@ -119,7 +119,7 @@ namespace Advanced2D{
 		}
 
 		currentX += xIncrement;
-		currentY = 0 + 
+		currentY -= yDecrement;
 	}
 
     void LevelManager::instantiateEntity(int value)
