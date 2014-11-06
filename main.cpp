@@ -1,10 +1,16 @@
 #include "..\..\Engine\Advanced2D.h"
+#include "LevelManager.h"
+#include "JumpingSprite.h"
+#include "ShootyGuy.h"
+#include "Monster.h"
 #include <sstream>
+
 using namespace Advanced2D;
 
 #define SCREENH 600
 #define SCREENW 800
 
+//TODO: Framerate killed by loading bullets... Fix it
 
 
 ////macro to read the keyboard asynchronously                                     
@@ -13,8 +19,8 @@ void applyGravity(Sprite *sprite);
 void jump(Sprite *sprite);
 Sprite *loadBullet(void);
 Sprite *closestEnemy();
-void drawBullets();
 void deactivateBullets();
+
 bool standing = true;
 
 
@@ -52,7 +58,7 @@ int bullSnortTimerInterval = 5000;
 const int BULLET_COUNT = 20;
 const int MONSTER_COUNT = 30;
 const int MONSTER_MOVE_SPEED = 1;
-const int GRASS_BLOCK_COUNT = 7;
+const int GRASS_BLOCK_COUNT = 3;
 
 int lastFiredBullet = 19;
 Sprite *bullets[BULLET_COUNT];
@@ -90,7 +96,7 @@ bool game_preload(){
 */
 bool game_init(HWND){
 
-		grassTexture = new Texture();
+	grassTexture = new Texture();
 	if (!grassTexture->Load("DirtMGrass.png", D3DCOLOR_XRGB(255, 174, 201)))
 	{
 		return 0;
@@ -257,7 +263,7 @@ void game_update(){
 	}
 
     //monsterUpdate();
-	deactivateBullets();
+	//deactivateBullets();
 
 	updateConsole();
 
@@ -332,6 +338,11 @@ void updateConsole()
 	    console->print(ostr.str(),lineY++);
 	    lineY++;
 	}
+
+	ostr.str("");
+	lineY++;
+	ostr << g_engine->getFrameRate_core() << " fps";
+	console->print(ostr.str(), lineY++);
 
 }
 
@@ -664,6 +675,19 @@ void game_entityUpdate(Advanced2D::Entity* entity)
 				    sprite->setVelocity( xVel, 0.0f);
 		    }
 		}
+		break;
+	case OBJECT_BULLET:
+		sprite = (Sprite*)entity;
+		//if not visible
+        if(!spriteOnScreen(sprite))
+		{
+		    entity->setVisible(false);
+		} 
+		if (!entity->getVisible())
+		{
+			entity->setLifetime(1);
+		}
+		break;
 	}
 }
 
