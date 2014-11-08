@@ -30,8 +30,8 @@ namespace Advanced2D
 		void loadMapFile(std::string file);
 		static const std::string DEFAULT_FILE_NAME;// = "map.txt";
 		std::string fileName;
-		void instantiateColumnEntities(std::vector<int>* nextVector);
-		void instantiateEntity(int value);
+		bool instantiateColumnEntities(std::vector<int>* nextVector);
+		bool instantiateEntity(int value);
 		void removeColumn(int index);
 		void init();
 

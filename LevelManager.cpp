@@ -105,8 +105,9 @@ namespace Advanced2D{
 		   add entity to entity manager (location matters, those at beggining rendered first)
 		   
 	*/
-	void LevelManager::instantiateColumnEntities(std::vector<int>* nextVector)
+	bool LevelManager::instantiateColumnEntities(std::vector<int>* nextVector)
 	{
+		bool loaded = true;
 		std::vector<int>::iterator values;
 		values = nextVector->begin();
 
@@ -120,10 +121,12 @@ namespace Advanced2D{
 
 		currentX += xIncrement;
 		currentY -= yDecrement;
+		return loaded;
 	}
 
-    void LevelManager::instantiateEntity(int value)
+    bool LevelManager::instantiateEntity(int value)
 	{
+		bool loaded = false;
 		Sprite* sprite = NULL;
 
 		if (value >= OBJECT_GUY && value < OBJECT_BULLET)
@@ -131,18 +134,58 @@ namespace Advanced2D{
 			if (!guyLoaded)
 			{
 				//load guy entity
-
+				sprite = new Sprite();
+				if (sprite->loadImage("Shooter guy.png", D3DCOLOR_XRGB(255,174,201)))
+				{
+					sprite->setColumns(2);
+				    sprite->setTotalFrames(2);
+				    sprite->setHeight(32);
+				    sprite->setWidth(32);
+				    sprite->setCurrentFrame(0);
+				    sprite->setMoveTimer(15);
+				    sprite->setObjectType(OBJECT_GUY);
+				    g_engine->addEntity(sprite);
+				}
 
 			    guyLoaded = true;
+			}
+			else
+			{
+				loaded = false;
 			}
 		}
 		else if (value < OBJECT_MONSTER)
 		{
-
+			sprite = new Sprite();
+			if (sprite->loadImage("monster.png", D3DCOLOR_XRGB(255, 174, 201)))
+			{
+				sprite->setWidth(32);
+				sprite->setHeight(32);
+				sprite->setColumns(4);
+				sprite->setTotalFrames(8);
+				sprite->setCurrentFrame(0);
+				sprite->setMoveTimer(15);
+				sprite->setFrameTimer(0);
+				sprite->setObjectType(OBJECT_MONSTER);
+				sprite->setCollisionMethod(COLLISION_DIST);
+				g_engine->addEntity(sprite);
+			}
 		}
 		else if (value < OBJECT_SOLID_BLOCK)
 		{
-
+			sprite = new Sprite();
+			if (sprite->loadImage("DirtMGrass32.png", D3DCOLOR_XRGB(255, 174, 201)))
+			{
+				sprite->setWidth(64);
+		        sprite->setHeight(64);
+		        sprite->setColumns(1);
+		        sprite->setTotalFrames(1);
+		        sprite->setCurrentFrame(0);
+		        sprite->setObjectType(OBJECT_SOLID_BLOCK);
+				sprite->setAlive(true);
+				sprite->setVisible(true);
+				g_engine->addEntity(sprite);
+			}
 		}
 		else
 		{
@@ -156,6 +199,9 @@ namespace Advanced2D{
 			int spriteY = this->currentY - yDecrement + sprite->getHeight();
 
 			sprite->setPosition(spriteX, spriteY);
+			loaded = true;
 		}
+
+		return loaded;
 	}
 }
