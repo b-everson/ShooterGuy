@@ -30,6 +30,7 @@ namespace Advanced2D
         void Insert(Entity* entity);
         std::vector<Entity*>* retrieve(std::vector<Entity*>* returnObjects, Entity* entity);
 		bool ContainsSprite(Sprite* sprite1);
+                int highestObjectCount;
     };
 
 };

@@ -118,12 +118,18 @@ namespace Advanced2D
             if (index != -1)
             {
                 nodes[index]->Insert(entity);
+				if(nodes[index]->highestObjectCount > this->highestObjectCount)
+					{
+						this->highestObjectCount = nodes[index]->highestObjectCount;
+					}
+				return;
             }
         }
 
         objects->push_back(entity);
 
 //		int max_objects = MAX_OBJECTS;
+
 
         if(objects->size() > MAX_OBJECTS && level < MAX_LEVELS)
         {
@@ -136,20 +142,18 @@ namespace Advanced2D
             while (i < objects->size())
             {
                 Entity* entity = objects->at(i);
+				this->highestObjectCount = this->objects->size();
                 int index = getIndex(entity);
                 if (index != -1)
                 {
                     nodes[index]->Insert(entity);
 					objects->erase(objects->begin() + i);
-                }
-             /*   else if (nodes[0] != NULL)
-                {
-					for (int j = 0; j < NODE_COUNT; j++)
+					
+					if(nodes[index]->highestObjectCount > this->highestObjectCount)
 					{
-						nodes[j]->Insert(entity);
+						this->highestObjectCount = nodes[index]->highestObjectCount;
 					}
-					objects->erase(objects->begin() + i);
-                }*/
+                }
 				else
 				{
 					i++;
