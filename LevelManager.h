@@ -44,5 +44,6 @@ namespace Advanced2D
 		static const int VALUES_LENGTH = 19;
 		static const int DEFAULT_BLOCK_HEIGHT = 32;
 		static const int DEFAULT_BLOCK_WIDTH = 32;
+		static const int DEFAULT_SCREEN_HEIGHT = 600;
 	};//class
 };//namespace

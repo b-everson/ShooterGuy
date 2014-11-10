@@ -58,7 +58,7 @@ int bullSnortTimerInterval = 5000;
 const int BULLET_COUNT = 20;
 const int MONSTER_COUNT = 30;
 const int MONSTER_MOVE_SPEED = 1;
-const int GRASS_BLOCK_COUNT = 3;
+const int GRASS_BLOCK_COUNT = 7;
 
 int lastFiredBullet = 19;
 Sprite *bullets[BULLET_COUNT];
@@ -77,6 +77,7 @@ float moveSpeed = 5.0;
 const float BULLET_SPEED_MODIFIER = 3.0;
 float highPoint = 0;
 Timer landCollisionTimer;
+LevelManager* levelManager;
 
 /*
     preload function is used to set up gameplay screen parameters
@@ -96,8 +97,8 @@ bool game_preload(){
 */
 bool game_init(HWND){
 
-	grassTexture = new Texture();
-	if (!grassTexture->Load("DirtMGrass.png", D3DCOLOR_XRGB(255, 174, 201)))
+	/*grassTexture = new Texture();
+	if (!grassTexture->Load("DirtMGrass32.png", D3DCOLOR_XRGB(255, 174, 201)))
 	{
 		return 0;
 	}
@@ -107,8 +108,8 @@ bool game_init(HWND){
 		for (int k = 0; k < GRASS_BLOCK_COUNT; k++){
 		Sprite *grassBlock = new Sprite();
 		grassBlock->setImage(grassTexture);
-		grassBlock->setWidth(64);
-		grassBlock->setHeight(64);
+		grassBlock->setWidth(32);
+		grassBlock->setHeight(32);
 		grassBlock->setColumns(1);
 		grassBlock->setTotalFrames(1);
 		grassBlock->setCurrentFrame(0);
@@ -120,13 +121,29 @@ bool game_init(HWND){
 		float xPos = j * 1.8 * 64 + k * 5;
 		//float yPos = SCREENH -  rand() % (SCREENH / 4);
 		float yPos = SCREENH - 96 * k + j;
+
+		/*if (j % 2 == 0)
+		{
+			xPos = j * 1.8 * 64;
+			yPos = SCREENH - 96 * k + j;
+
+			xPos = 520;
+			yPos = 415;
+		}
+		else
+		{
+			xPos = 330;
+			yPos = 320;
+		}* /
+
 		grassBlock->setPosition(xPos, yPos);
 		
 
 		g_engine->addEntity(grassBlock);
+	
 		}
 	} 
-
+	*/
 	shootyGuy = new Sprite();
 	if (! shootyGuy->loadImage("Shooter guy.png", D3DCOLOR_XRGB(255,174,201)))
 		return 0;
@@ -138,8 +155,8 @@ bool game_init(HWND){
 	shootyGuy->setPosition(g_engine->getScreenWidth()/2, g_engine->getScreenHeight() - shootyGuy->getHeight());
 	shootyGuy->setMoveTimer(15);
 	shootyGuy->setObjectType(OBJECT_GUY);
-	g_engine->addEntity(shootyGuy);
-
+	g_engine->addEntity(shootyGuy, DRAW_PRIORITY_FRONT);
+	/*
 	for (int i = 0; i < BULLET_COUNT; i++)
 	{
 		bullets[i] = new Sprite();
@@ -168,7 +185,7 @@ bool game_init(HWND){
 			monsters[i]->setAlive(false);
 		}else
 		{
-		    g_engine->addEntity(monsters[i]);
+		    g_engine->addEntity(monsters[i], DRAW_PRIORITY_MIDDLE);
 		}
 	}
 
@@ -193,7 +210,9 @@ bool game_init(HWND){
 	bull->setPosition(g_engine->getScreenWidth() * 2 / 3, g_engine->getScreenHeight() - bull->getHeight());
 	
 	highPoint = g_engine->getScreenHeight() - shootyGuy->getHeight() - 40;
+	*/
 
+    levelManager = new LevelManager();
 	//create the console
 	console = new Console();
 	if(!console->init())
@@ -262,8 +281,6 @@ void game_update(){
 		bullSnort();
 	}
 
-    //monsterUpdate();
-	//deactivateBullets();
 
 	updateConsole();
 
@@ -337,12 +354,24 @@ void updateConsole()
 
 	    console->print(ostr.str(),lineY++);
 	    lineY++;
-	}
 
-	ostr.str("");
-	lineY++;
-	ostr << g_engine->getFrameRate_core() << " fps";
-	console->print(ostr.str(), lineY++);
+		ostr.str("");
+	    ostr << g_engine->getFrameRate_core() << " fps";
+	    console->print(ostr.str(), lineY++);
+	}
+	else
+	{
+	    ostr.str("");
+	    ostr << g_engine->getFrameRate_core() << " fps";
+	    console->print(ostr.str(), lineY++);
+
+		ostr.str("");
+		console->print(ostr.str(), lineY++);
+		lineY++;
+
+		ostr.str("");
+		console->print(ostr.str(), lineY);
+	}
 
 }
 
@@ -352,10 +381,6 @@ void game_render2d(){
 	{
 		console->draw();
 	}
-//	shootyGuy->draw();
-//	drawBullets();
-//	drawMonsters();
-//	bull->draw();
 }
 
 void game_render3d(){
@@ -398,7 +423,7 @@ void shoot(AutoPilotMode mode)
 	    Sprite *bullet = loadBullet();
 	    bullet->setVisible(true);
 		bullet->setObjectType(OBJECT_BULLET);
-		g_engine->addEntity(bullet);
+		g_engine->addEntity(bullet, DRAW_PRIORITY_FRONT);
 	
 	    if(mode == None)
 	    {
@@ -576,7 +601,7 @@ void monsterUpdate()
 
 */
 void bullSnort()
-{
+{/*
 	if(bull->getCurrentFrame() != 0 || !bullSnorting){
 		bullSnorting = true;
 		bull->setFrameTimer(150);
@@ -584,7 +609,7 @@ void bullSnort()
 	    bullSnortTimerStart = timeGetTime();
 		bullSnorting = false;
 		bull->setFrameTimer(0);
-	}
+	}*/
 }
 
 Sprite *closestEnemy()
@@ -828,13 +853,11 @@ void game_entityCollision(Advanced2D::Entity* entity1, Advanced2D::Entity* entit
 		}
 	} */
 
-	/*if (type1 == OBJECT_MONSTER && type2 == OBJECT_MONSTER)
+	if (type1 == OBJECT_MONSTER && type2 == OBJECT_MONSTER)
 	{
 		sprite1 = (Sprite*) entity1;
 		sprite2 = (Sprite*) entity2;
 	
-		//g_engine->message("Monster collision");
-
 		if (sprite2->getX() > sprite1->getX())
 		{
 			sprite2->setPosition(sprite1->getX() + sprite1->getWidth(), sprite2->getY());
@@ -844,7 +867,7 @@ void game_entityCollision(Advanced2D::Entity* entity1, Advanced2D::Entity* entit
 			sprite1->setPosition(sprite2->getX() + sprite2->getWidth(), sprite1->getY());
 		}
 	}
-	*/
+	
 	if(type2 == OBJECT_BULLET && type1 == OBJECT_MONSTER)
 	{
 		sprite2 = (Sprite*) entity1;

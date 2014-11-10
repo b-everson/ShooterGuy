@@ -29,9 +29,16 @@ namespace Advanced2D{
 		xIncrement = DEFAULT_BLOCK_WIDTH;
 
 		currentX = 0;
-		currentY = yDecrement * VALUES_LENGTH;
+		currentY = DEFAULT_SCREEN_HEIGHT;
 
+		this->loadMapFile();
 
+		std::vector<std::vector<int>*>::iterator createIter = this->tiles->begin();
+		while (createIter != tiles->end())
+		{
+			this->instantiateColumnEntities(*createIter);
+			createIter++;
+		}
 	}
 
 	void LevelManager::loadMapFile()
@@ -71,8 +78,8 @@ namespace Advanced2D{
 
 			if (commaPosition != std::string::npos)
 			{
+				stringValue = nextLine.substr(0, commaPosition);
 			    nextLine = nextLine.substr(commaPosition + 1, nextLine.length() - 1 - commaPosition);
-			    stringValue = nextLine.substr(0, commaPosition);
 			}
 			else
 			{
@@ -113,14 +120,14 @@ namespace Advanced2D{
 
 		while (values != nextVector->end())
 		{
+			currentY -= yDecrement;
 			int nextTile = (*values);
 			instantiateEntity(nextTile);
 			values++;
-			currentY -= yDecrement;
 		}
 
 		currentX += xIncrement;
-		currentY -= yDecrement;
+		currentY = DEFAULT_SCREEN_HEIGHT;
 		return loaded;
 	}
 
@@ -128,8 +135,12 @@ namespace Advanced2D{
 	{
 		bool loaded = false;
 		Sprite* sprite = NULL;
-
-		if (value >= OBJECT_GUY && value < OBJECT_BULLET)
+		
+		if (value < OBJECT_GUY)
+		{
+			loaded = true;
+		}
+		else if (value >= OBJECT_GUY && value < OBJECT_BULLET)
 		{
 			if (!guyLoaded)
 			{
@@ -144,7 +155,7 @@ namespace Advanced2D{
 				    sprite->setCurrentFrame(0);
 				    sprite->setMoveTimer(15);
 				    sprite->setObjectType(OBJECT_GUY);
-				    g_engine->addEntity(sprite);
+				    g_engine->addEntity(sprite, DRAW_PRIORITY_FRONT);
 				}
 
 			    guyLoaded = true;
@@ -154,7 +165,7 @@ namespace Advanced2D{
 				loaded = false;
 			}
 		}
-		else if (value < OBJECT_MONSTER)
+		else if (value >= OBJECT_MONSTER && value < OBJECT_SOLID_BLOCK)
 		{
 			sprite = new Sprite();
 			if (sprite->loadImage("monster.png", D3DCOLOR_XRGB(255, 174, 201)))
@@ -168,23 +179,23 @@ namespace Advanced2D{
 				sprite->setFrameTimer(0);
 				sprite->setObjectType(OBJECT_MONSTER);
 				sprite->setCollisionMethod(COLLISION_DIST);
-				g_engine->addEntity(sprite);
+				g_engine->addEntity(sprite, DRAW_PRIORITY_FRONT);
 			}
 		}
-		else if (value < OBJECT_SOLID_BLOCK)
+		else if (value >= OBJECT_SOLID_BLOCK && value <= OBJECT_SOLID_BLOCK + SPRITE_TYPES_RANGE)
 		{
 			sprite = new Sprite();
 			if (sprite->loadImage("DirtMGrass32.png", D3DCOLOR_XRGB(255, 174, 201)))
 			{
-				sprite->setWidth(64);
-		        sprite->setHeight(64);
+				sprite->setWidth(32);
+		        sprite->setHeight(32);
 		        sprite->setColumns(1);
 		        sprite->setTotalFrames(1);
 		        sprite->setCurrentFrame(0);
 		        sprite->setObjectType(OBJECT_SOLID_BLOCK);
 				sprite->setAlive(true);
 				sprite->setVisible(true);
-				g_engine->addEntity(sprite);
+				g_engine->addEntity(sprite, DRAW_PRIORITY_BACK);
 			}
 		}
 		else
