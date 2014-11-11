@@ -30,6 +30,7 @@ namespace Advanced2D{
 
 		currentX = 0;
 		currentY = DEFAULT_SCREEN_HEIGHT;
+		this->maxBaseX = 0;
 
 		this->loadMapFile();
 
@@ -91,7 +92,7 @@ namespace Advanced2D{
 			nextColumn->push_back(nextValue);
 		}
 
-
+		this->maxBaseX += xIncrement;
 		return nextColumn;
 	}
 
@@ -214,5 +215,11 @@ namespace Advanced2D{
 		}
 
 		return loaded;
+	}
+
+	void LevelManager::scrollX(int x)
+	{
+		this->currentX -= x;
+		this->maxBaseX -= x;
 	}
 }

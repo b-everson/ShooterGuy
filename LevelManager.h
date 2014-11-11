@@ -36,6 +36,7 @@ namespace Advanced2D
 		void init();
 
 	public:
+		void scrollX(int x);
 		int getMaxBaseX() { return maxBaseX; }
 		LevelManager();
 		LevelManager(std::string file);

@@ -10,6 +10,9 @@ using namespace Advanced2D;
 #define SCREENH 600
 #define SCREENW 800
 
+
+const double SCREEN_MARGIN_X = 2.0 / 3.0;
+
 //TODO: Framerate killed by loading bullets... Fix it
 
 
@@ -20,6 +23,8 @@ void jump(Sprite *sprite);
 Sprite *loadBullet(void);
 Sprite *closestEnemy();
 void deactivateBullets();
+
+int pastScrollingMargin();
 
 bool standing = true;
 
@@ -58,13 +63,7 @@ int bullSnortTimerInterval = 5000;
 const int BULLET_COUNT = 20;
 const int MONSTER_COUNT = 30;
 const int MONSTER_MOVE_SPEED = 1;
-const int GRASS_BLOCK_COUNT = 7;
 
-int lastFiredBullet = 19;
-Sprite *bullets[BULLET_COUNT];
-Sprite *monsters[MONSTER_COUNT];
-Texture *grassTexture;
-Sprite *grassBlocks[GRASS_BLOCK_COUNT];
 Sprite *standingSurface = NULL;
 Console* console;
 std::ostringstream ostr;
@@ -97,53 +96,6 @@ bool game_preload(){
 */
 bool game_init(HWND){
 
-	/*grassTexture = new Texture();
-	if (!grassTexture->Load("DirtMGrass32.png", D3DCOLOR_XRGB(255, 174, 201)))
-	{
-		return 0;
-	}
-
-	for (int j = 0; j < GRASS_BLOCK_COUNT; j++)
-	{
-		for (int k = 0; k < GRASS_BLOCK_COUNT; k++){
-		Sprite *grassBlock = new Sprite();
-		grassBlock->setImage(grassTexture);
-		grassBlock->setWidth(32);
-		grassBlock->setHeight(32);
-		grassBlock->setColumns(1);
-		grassBlock->setTotalFrames(1);
-		grassBlock->setCurrentFrame(0);
-		grassBlock->setObjectType(OBJECT_SOLID_BLOCK);
-		grassBlocks[j] = grassBlock;
-		grassBlock->setAlive(true);
-		grassBlock->setVisible(true);
-		
-		float xPos = j * 1.8 * 64 + k * 5;
-		//float yPos = SCREENH -  rand() % (SCREENH / 4);
-		float yPos = SCREENH - 96 * k + j;
-
-		/*if (j % 2 == 0)
-		{
-			xPos = j * 1.8 * 64;
-			yPos = SCREENH - 96 * k + j;
-
-			xPos = 520;
-			yPos = 415;
-		}
-		else
-		{
-			xPos = 330;
-			yPos = 320;
-		}* /
-
-		grassBlock->setPosition(xPos, yPos);
-		
-
-		g_engine->addEntity(grassBlock);
-	
-		}
-	} 
-	*/
 	shootyGuy = new Sprite();
 	if (! shootyGuy->loadImage("Shooter guy.png", D3DCOLOR_XRGB(255,174,201)))
 		return 0;
@@ -157,45 +109,6 @@ bool game_init(HWND){
 	shootyGuy->setObjectType(OBJECT_GUY);
 	g_engine->addEntity(shootyGuy, DRAW_PRIORITY_FRONT);
 	/*
-	for (int i = 0; i < BULLET_COUNT; i++)
-	{
-		bullets[i] = new Sprite();
-		if( !bullets[i]->loadImage("bullet.png", D3DCOLOR_XRGB(255, 174, 201)))
-			return 0;
-		bullets[i]->setMoveTimer(15);
-		bullets[i]->setVisible(false);
-	}
-
-	for (int i = 0; i < MONSTER_COUNT; i++)
-	{
-		monsters[i] = new Sprite();
-		if(!monsters[i]->loadImage("monster.png", D3DCOLOR_XRGB(255, 174, 201)))
-			return 0;
-		monsters[i]->setWidth(32);
-		monsters[i]->setHeight(32);
-		monsters[i]->setColumns(4);
-		monsters[i]->setTotalFrames(8);
-		monsters[i]->setCurrentFrame(0);
-		monsters[i]->setMoveTimer(15);
-		monsters[i]->setFrameTimer(0);
-		monsters[i]->setObjectType(OBJECT_MONSTER);
-		monsters[i]->setCollisionMethod(COLLISION_DIST);
-		if( i > 1 ){
-		    monsters[i]->setVisible(false);
-			monsters[i]->setAlive(false);
-		}else
-		{
-		    g_engine->addEntity(monsters[i], DRAW_PRIORITY_MIDDLE);
-		}
-	}
-
-
-	monsters[0]->setCurrentFrame(4);
-	monsters[0]->setPosition(0, g_engine->getScreenHeight() - monsters[0]->getHeight());
-
-	monsters[1]->setPosition(g_engine->getScreenWidth() - monsters[1]->getWidth(), g_engine->getScreenHeight() - monsters[1]->getHeight());
-
-	
 	bull = new Sprite();
 	if(!bull->loadImage("bull.png", D3DCOLOR_XRGB(255, 174, 201)))
 		return 0;
@@ -309,14 +222,6 @@ bool checkOnSurface()
 void game_end()
 {
 	delete shootyGuy;
-	for (int i = 0; i < BULLET_COUNT; i++)
-	{
-		delete bullets[i];
-	}
-	for (int i = 0; i < MONSTER_COUNT; i++)
-	{
-		delete monsters[i];
-	}
 	delete bull;
 
 }
@@ -519,7 +424,7 @@ void shoot(AutoPilotMode mode)
 //use lastFiredBullet to determine next bullet
 Sprite *loadBullet()
 {
-	int nextFiredBullet = lastFiredBullet + 1;
+/*	int nextFiredBullet = lastFiredBullet + 1;
 
 	if(lastFiredBullet == BULLET_COUNT - 1)
 	{
@@ -528,37 +433,14 @@ Sprite *loadBullet()
 
 	lastFiredBullet = nextFiredBullet;
 
-	return bullets[nextFiredBullet];
+	return bullets[nextFiredBullet];*/
+	return NULL;
 }
-
-void deactivateBullets()
-{
-	for (int i = 0; i < BULLET_COUNT; i++)
-	{
-		if (bullets[i]->getVisible() && !spriteOnScreen(bullets[i]))
-		{
-			bullets[i]->setVisible(false);
-		}
-	}
-}
-
-void drawBullets()
-{
-	for (int i = 0; i < BULLET_COUNT; i++)
-	{
-		if (bullets[i]->getVisible())
-		{
-			bullets[i]->draw();
-		}
-	}
-}
-
-
 
 
 
 void monsterUpdate()
-{
+{/*
 
 	for (int i = 0; i < MONSTER_COUNT; i++) 
 	{
@@ -588,7 +470,7 @@ void monsterUpdate()
 				}
 			}
 		}
-	}
+	}*/
 }
 
 
@@ -616,22 +498,35 @@ Sprite *closestEnemy()
 {
 	Sprite *closest = NULL;
 	int shortestDistance = g_engine->getScreenWidth() * 2; //can include monsters off screen, but not way far off of screen
-		
+	
+	std::list<Entity*>::iterator iter = g_engine->getEntityList().begin();
+	std::vector<Sprite*>* monsters = new std::vector<Sprite*>();
+
+	while(iter != g_engine->getEntityList().end())
+	{
+		if ((*iter)->getObjectType() == OBJECT_MONSTER)
+		{
+		    Sprite* sprite = (Sprite*)(*iter);
+			monsters->push_back(sprite);
+		}
+
+	}
+
 	for(int i = 0; i < MONSTER_COUNT; i++)
 	{	
-		if(monsters[i]->getVisible() && monsters[i]->getAlive())
+		if(monsters->at(i)->getVisible() && monsters->at(i)->getAlive())
 		{
 			//closest to shooter guy, determined by midpoint of each    
 			float shooterMidX = shootyGuy->getPosition().getX() + shootyGuy->getWidth() / 2;
 
-			float monsterMidX = monsters[i]->getPosition().getX() + monsters[i]->getWidth() / 2;
+			float monsterMidX = monsters->at(i)->getPosition().getX() + monsters->at(i)->getWidth() / 2;
 
 			int distance = fabs(shooterMidX - monsterMidX);
 
 			if (distance < shortestDistance)
 			{
 				shortestDistance = distance;
-				closest = monsters[i];
+				closest = monsters->at(i);
 			}
 		}
 	}
@@ -662,11 +557,21 @@ void faceRight(bool right)
 void game_entityUpdate(Advanced2D::Entity* entity)
 {
 	int type = entity->getObjectType();
-	Sprite* sprite;
+	Sprite* sprite = (Sprite*)entity;
+	int pastMargin = pastScrollingMargin();
+	if( pastMargin > 0 && levelManager->getMaxBaseX() > SCREENW + .005)
+	{
+		sprite->setX(sprite->getX() - pastMargin);
+	}
+
+	if (((Entity*)sprite)->getObjectType() != OBJECT_GUY && sprite->getX() + sprite->getWidth() < 0)
+	{
+		sprite->setAlive(false);
+	}
+
 	switch (type)
 	{
 	case OBJECT_MONSTER:
-		sprite = (Sprite*)entity;
 		if (sprite->getCurrentFrame() == 6 || sprite->getCurrentFrame() == 3)
 		{
 			sprite->setAlive(false);
@@ -702,7 +607,6 @@ void game_entityUpdate(Advanced2D::Entity* entity)
 		}
 		break;
 	case OBJECT_BULLET:
-		sprite = (Sprite*)entity;
 		//if not visible
         if(!spriteOnScreen(sprite))
 		{
@@ -711,6 +615,22 @@ void game_entityUpdate(Advanced2D::Entity* entity)
 		if (!entity->getVisible())
 		{
 			entity->setLifetime(1);
+		}
+		break;
+	
+	case OBJECT_GUY:
+		if (pastMargin > 0 && levelManager->getMaxBaseX() > SCREENW + .005)
+		{
+			levelManager->scrollX(pastMargin);
+		}
+
+		if (sprite->getX() < 0)
+		{
+			sprite->setX(0);
+		}
+		else if (sprite->getX() + sprite->getWidth() > SCREENW)
+		{
+			sprite->setX(SCREENW - sprite->getWidth());
 		}
 		break;
 	}
@@ -736,7 +656,7 @@ void game_entityCollision(Advanced2D::Entity* entity1, Advanced2D::Entity* entit
 
 	if (type1 == OBJECT_GUY && type2 == OBJECT_SOLID_BLOCK)
 	{
-		//g_engine->message("Guy->block collision");
+		g_engine->message("Guy->block collision");
 	}
 	
     if(type1 == OBJECT_SOLID_BLOCK && (type2 == OBJECT_GUY))// || type1 == OBJECT_MONSTER))
@@ -795,63 +715,6 @@ void game_entityCollision(Advanced2D::Entity* entity1, Advanced2D::Entity* entit
 			break;
 		}
 	} 
-
-	/*if(type2 == OBJECT_SOLID_BLOCK && (type1 == OBJECT_GUY))// || type1 == OBJECT_MONSTER))
-	{
-		Sprite* guySprite;
-		Sprite* blockSprite;
-		guySprite = (Sprite*)entity1;
-		blockSprite = (Sprite*)entity2;
-		
-		CollisionSide side = getCollisionSide(guySprite, blockSprite);
-
-		switch (side)
-		{
-		case Top:
-			guySprite->setY(blockSprite->getY() - guySprite->getHeight());
-			guySprite->setVelocity(0, 0);
-			standingSurface = blockSprite;
-			standing = true;
-			break;
-		case Bottom:
-			/*if (backToBackCollisionTimer.stopwatch(1))
-			{
-				if (guySprite->getMidPoint().getX() > blockSprite->getMidPoint().getX())
-				{
-					guySprite->setPosition(blockSprite->getX() + blockSprite->getWidth(), guySprite->getY());
-				}
-				else 
-				{
-					guySprite->setPosition(blockSprite->getX() - guySprite->getWidth(), guySprite->getY());
-				}
-			}
-			else
-			{* /
-			    guySprite->setY(blockSprite->getY() + blockSprite->getHeight());
-				guySprite->setVelocity(0, 0);
-			//}
-			break;		
-		case Left:
-			guySprite->setX(blockSprite->getX() - guySprite->getWidth());
-			guySprite->setVelocity(0, guySprite->getVelocity().getY());
-			break;
-		case Right:
-			guySprite->setX(blockSprite->getX() + blockSprite->getWidth());
-			guySprite->setVelocity(0, guySprite->getVelocity().getY());
-			break;
-		case ZeroVelocity:
-			if (guySprite->getMidPoint().getX() > blockSprite->getMidPoint().getX())
-			{
-				guySprite->setPosition(blockSprite->getX() + blockSprite->getWidth(), guySprite->getY());
-			}
-			else 
-			{
-				guySprite->setPosition(blockSprite->getX() - guySprite->getWidth(), guySprite->getY());
-			}
-			//g_engine->message("Fuck, zero velocity");
-			break;
-		}
-	} */
 
 	if (type1 == OBJECT_MONSTER && type2 == OBJECT_MONSTER)
 	{
@@ -1019,6 +882,11 @@ CollisionSide getCollisionSide(Sprite* sprite1, Sprite* sprite2)
 	
 	return ZeroVelocity;
 
+}
+
+int pastScrollingMargin()
+{
+	return shootyGuy->getX() - SCREENW * SCREEN_MARGIN_X;
 }
 
 
