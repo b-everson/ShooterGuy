@@ -77,6 +77,7 @@ const float BULLET_SPEED_MODIFIER = 3.0;
 float highPoint = 0;
 Timer landCollisionTimer;
 LevelManager* levelManager;
+int pastMargin = 0;
 
 /*
     preload function is used to set up gameplay screen parameters
@@ -180,6 +181,8 @@ void game_update(){
 
 
 	shootyGuy->move();
+
+	pastMargin = pastScrollingMargin();
 
 /*	if(shootyGuy->getY() < highPoint )
 	{
@@ -558,7 +561,8 @@ void game_entityUpdate(Advanced2D::Entity* entity)
 {
 	int type = entity->getObjectType();
 	Sprite* sprite = (Sprite*)entity;
-	int pastMargin = pastScrollingMargin();
+
+	//TODO: guy updating before monsters, monsters are not scrolling with other objects
 	if( pastMargin > 0 && levelManager->getMaxBaseX() > SCREENW + .005)
 	{
 		sprite->setX(sprite->getX() - pastMargin);
