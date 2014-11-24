@@ -568,7 +568,7 @@ void game_entityUpdate(Advanced2D::Entity* entity)
 		sprite->setX(sprite->getX() - pastMargin);
 	}
 
-	if (((Entity*)sprite)->getObjectType() != OBJECT_GUY && sprite->getX() + sprite->getWidth() < 0)
+	if (((Entity*)sprite)->getObjectType() != OBJECT_GUY && sprite->getX() + sprite->getWidth() < 0)// - SCREENW / 2)
 	{
 		sprite->setAlive(false);
 	}
@@ -676,7 +676,6 @@ void game_entityCollision(Advanced2D::Entity* entity1, Advanced2D::Entity* entit
 		{
 		case Top:
 			guySprite->setY(blockSprite->getY() - guySprite->getHeight());
-			guySprite->setVelocity(0, 0);
 			standingSurface = blockSprite;
 			standing = true;
 			break;
@@ -695,16 +694,13 @@ void game_entityCollision(Advanced2D::Entity* entity1, Advanced2D::Entity* entit
 			else
 			{*/
 			    guySprite->setY(blockSprite->getY() + blockSprite->getHeight());
-				guySprite->setVelocity(0, 0);
 			//}
 			break;		
 		case Left:
 			guySprite->setX(blockSprite->getX() - guySprite->getWidth());
-			guySprite->setVelocity(0, guySprite->getVelocity().getY());
 			break;
 		case Right:
 			guySprite->setX(blockSprite->getX() + blockSprite->getWidth());
-			guySprite->setVelocity(0, guySprite->getVelocity().getY());
 			break;
 		case ZeroVelocity:
 			if (guySprite->getMidPoint().getX() > blockSprite->getMidPoint().getX())
@@ -850,7 +846,7 @@ CollisionSide getCollisionSide(Sprite* sprite1, Sprite* sprite2)
 		}
 		else if (subtractedVelocity.getY() < 0 - tolerance)
 		{
-			//right, upward angle, intrecpeted with either left or top side
+			//right, upward angle, intercepted with either left or top side
 			depthX = sprite2->getX() + sprite2->getWidth() - firstCollisionPosition.getX();
 			depthY = sprite2->getY() + sprite2->getHeight() - firstCollisionPosition.getY();
 
@@ -858,7 +854,7 @@ CollisionSide getCollisionSide(Sprite* sprite1, Sprite* sprite2)
 			float xRatio = depthX / subtractedVelocity.getX() * -1 + .001;  //possible divide by zero
 			float yRatio = depthY / subtractedVelocity.getY() * -1 + .001;
 
-			return xRatio > yRatio ? Bottom : Right;
+			return xRatio > yRatio ? Bottom : Right; 
 
 		}
 		else if (subtractedVelocity.getY() > 0 - tolerance && subtractedVelocity.getY() < 0 + tolerance)
