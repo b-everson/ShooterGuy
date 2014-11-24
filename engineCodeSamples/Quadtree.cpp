@@ -12,6 +12,7 @@ namespace Advanced2D
 {  
     Quadtree::Quadtree(int pLevel, Rect* pBounds)  
     {
+		this->highestObjectCount = 0;
         level = pLevel;
         objects = new std::vector<Entity*>();
         bounds = pBounds;
@@ -61,10 +62,13 @@ namespace Advanced2D
         for(int i = 0; i < NODE_COUNT; i++)
         {    
             if(nodes[i] != NULL)
-            {             
+            {    
+				delete nodes[i];
                 nodes[i] = NULL;
             }
         }
+
+		this->highestObjectCount = 0;
     }
 
     
@@ -127,8 +131,6 @@ namespace Advanced2D
         }
 
         objects->push_back(entity);
-
-//		int max_objects = MAX_OBJECTS;
 
 
         if(objects->size() > MAX_OBJECTS && level < MAX_LEVELS)
