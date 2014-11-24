@@ -9,37 +9,50 @@ http://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-quadtrees-to-detect-
 	void Engine::TestForCollisions()
 	{
 		
-	    quadtree->Clear();
-	    std::list<Entity*>::iterator entities;
-            std::vector<Entity*>* collidables = new std::vector<Entity*>();
-	    entities = p_entities.begin();
-	    while (entities != p_entities.end())
-	    {
-		Entity* entity = *entities;
-		if (entity->getAlive() && entity->getVisible())
+		quadtree->Clear();
+		std::list<Entity*>::iterator entities;
+        std::vector<Entity*>* collidables = new std::vector<Entity*>();
+		entities = p_entities.begin();
+		while (entities != p_entities.end())
 		{
-			collidables->push_back(entity);
-			quadtree->Insert(*entities);
+			Entity* entity = *entities;
+			if (entity->getAlive() && entity->getVisible())
+			{
+				collidables->push_back(entity);
+				quadtree->Insert(*entities);
+			}
+			entities++;
 		}
-	        entities++;
-	    }
 
-	    std::vector<Entity*>* checks = new std::vector<Entity*>();
-	    for(int i = 0; i < collidables->size(); i++)
-	    {
-		Entity* entity1 = collidables->at(i);
-		checks->clear();
-		checks = quadtree->retrieve(checks, entity1);
-		Sprite* sprite1 = (Sprite*)entity1;
-		for (int j = 0; j < checks->size(); j++)
+		if(quadtree->highestObjectCount > 10 && false)
 		{
-		    Sprite* sprite2 = (Sprite*)checks->at(j);
-		    if(collision(sprite1, sprite2))
-		    {
-			//notify game of collision
-			game_entityCollision(sprite1, sprite2);
-                    }
+		    std::ostringstream ostr;
+		    ostr << quadtree->highestObjectCount;
+		    g_engine->message(ostr.str());
 		}
-	    }
+		
+		std::vector<Entity*>* checks = new std::vector<Entity*>();		
+		
+		//iterator is slower than using collidables->at(i)
+		for(int i = 0; i < collidables->size(); i++)
+		{
+			Entity* entity1 = collidables->at(i);
+			checks->clear();
+			checks = quadtree->retrieve(checks, entity1);
+			Sprite* sprite1 = (Sprite*)entity1;
+			for (int j = 0; j < checks->size(); j++)
+			{
+				Sprite* sprite2 = (Sprite*)checks->at(j);
+				if(collision(sprite1, sprite2))
+				{
+					//notify game of collision
+					game_entityCollision(sprite1, sprite2);
+                }
+			}
+		} 
+
+		delete collidables;
+		delete checks;
+	}
 		
 
